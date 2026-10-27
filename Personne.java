@@ -21,9 +21,20 @@ public class Personne {
         return preferences;
     }
 
+    public List<Personne> getJaloux(){
+        return jaloux;
+    }
+
     public void ajoutJaloux(Personne p){
         this.jaloux.add(p);
     }
+
+    public void ajoutPreferences(int[] prefs){
+        for( int i = 0; i < prefs.length; i++){
+            this.preferences[i] = String.valueOf(prefs[i]);
+        }
+    }
+
     @Override 
     public String toString(){
 
