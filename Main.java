@@ -7,22 +7,22 @@ class Main{
         Scanner sc = new Scanner(System.in);
         int choixUtilisateur1 = 1;
         // nombre de personnes n dans le groupe ( = nombre de chambres ) 
-        // System.out.println("Nombre de personnes dans le groupe ( = nombre de chambres ) : ");
-        int n = 3; //sc.nextInt();
+        System.out.println("Nombre de personnes dans le groupe ( = nombre de chambres ) : ");
+        int n = sc.nextInt();
 
-        // on crée les personnes manuellement
-        Personne p1 = new Personne("A", n);
-        Personne p2 = new Personne("B", n);
-        Personne p3 = new Personne("C", n);
-
-        // on crée une liste de personnes 
-        Personne[] personnes = {p1, p2, p3};
+        // on crée la liste de personnes
+        Personne[] personnes = new Personne[n];
+        for (int i = 0; i < n; i++){
+            System.out.println("Entrez le nom de la personne");
+            personnes[i] = new Personne(sc.next(), n);
+        }
+        
 
 
         GroupeVoyage gp = new GroupeVoyage(personnes, n);
         
         gp.init();
-
+        gp.affiche();
         // bloc 1 , initialisation des chambres et des relations
         while ( choixUtilisateur1 != 3 ){
             try{
@@ -111,7 +111,8 @@ class Main{
         }
 
 
-        
+        // affichage d'une solution naïve : 
+        gp.afficheSolutionNaive();
         // bloc 2 , proposition solution naïve + possibilité pour l'utilisateur de modifier solution
         int choixUtilisateur2 = -1;
         while ( choixUtilisateur2 != 3 ){
