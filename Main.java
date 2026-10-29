@@ -21,8 +21,12 @@ class Main{
 
         GroupeVoyage gp = new GroupeVoyage(personnes, n);
         
-        gp.init();
+        gp.init(); // on initisalise
+
+        System.out.print("\n");
+
         gp.affiche();
+
         // bloc 1 , initialisation des chambres et des relations
         while ( choixUtilisateur1 != 3 ){
             try{
@@ -78,12 +82,8 @@ class Main{
                     p.ajoutPreferences(preferencesChambres);
                     System.out.println("préférences ajoutés avec succès \n\n");
 
-                    for(int i=0;i<gp.getPersonnes().length;i++){
-                        System.out.println(gp.getPersonnes()[i].getNom() + " : ");
-                        for(int j=0;j<gp.getPersonnes()[i].getPreferences().length;j++){
-                            System.out.print(gp.getPersonnes()[i].getPreferences()[j] + " ");
-                        }
-                    System.out.println("\n");
+                    for (Personne pers : gp.getPersonnes()) {
+                        System.out.println(pers);
                     }
                 }
 
@@ -94,25 +94,27 @@ class Main{
             }
         }
 
-        for(int i=0;i<gp.getPersonnes().length;i++){
-            System.out.println(gp.getPersonnes()[i].getNom() + " : ");
-            for(int j=0;j<gp.getPersonnes()[i].getPreferences().length;j++){
-                System.out.print(gp.getPersonnes()[i].getPreferences()[j] + " ");
+        System.out.println("=== Récapitulatif des personnes ===");
+        for (Personne pers : gp.getPersonnes()) {
+            System.out.println(pers);
+            if (!pers.getJaloux().isEmpty()) {
+                System.out.print("   -> Jaloux de : ");
+                for (Personne j : pers.getJaloux()) {
+                    System.out.print(j.getNom() + " ");
+                }
+                System.out.println();
             }
-            System.out.println("\n");
         }
-
-        for(int i=0;i<gp.getPersonnes().length;i++){
-            System.out.println(gp.getPersonnes()[i].getNom() + " jalouse : ");
-            for(int j=0;j<gp.getPersonnes()[i].getJaloux().size();j++){
-                System.out.print(gp.getPersonnes()[i].getJaloux().get(j).getNom() + " ");
-            }
-            System.out.println("\n");
-        }
+        System.out.println();
 
 
         // affichage d'une solution naïve : 
         gp.afficheSolutionNaive();
+
+
+
+
+
         // bloc 2 , proposition solution naïve + possibilité pour l'utilisateur de modifier solution
         int choixUtilisateur2 = -1;
         while ( choixUtilisateur2 != 3 ){
@@ -135,6 +137,14 @@ class Main{
 
                 if ( choixUtilisateur2 == 1 ){
                     System.out.println("Entrer les deux personnes dont vous voulez échanger les chambres ( ex : A B ) : ");
+
+                    String entreeUtilisateur2 = sc.nextLine();
+
+                    String[] elements2 = entreeUtilisateur2.split(" "); // elements est sous forme ["A", "B"]
+
+                    // On échange les chambres
+                    gp.echangerChambres( gp.getPersonne(elements2[0]) , gp.getPersonne(elements2[1])); 
+                    gp.affiche();
                 }
                 else if ( choixUtilisateur2 == 2 ){
                     System.out.println("Nombre de personnes jalouses : ");
@@ -147,6 +157,8 @@ class Main{
             }
         } 
 
+    System.out.println("------------------------- Résultat final -------------------------");
+    gp.affiche();
     sc.close();
     }
 }
