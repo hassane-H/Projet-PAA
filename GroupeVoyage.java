@@ -89,6 +89,8 @@ public class GroupeVoyage {
         String chambreB = B.getChambre();
         AttributionChambres.replace(chambreA, B);
         AttributionChambres.replace(chambreB, A);
+        A.ajoutChambre(chambreB);
+        B.ajoutChambre(chambreA);
 
     }
 

@@ -13,7 +13,7 @@ class Main{
         // on crée la liste de personnes
         Personne[] personnes = new Personne[n];
         for (int i = 0; i < n; i++){
-            System.out.println("Entrez le nom de la personne");
+            System.out.println("Entrez le nom de la personne "+(i+1));
             personnes[i] = new Personne(sc.next(), n);
         }
         
@@ -113,8 +113,6 @@ class Main{
 
 
 
-
-
         // bloc 2 , proposition solution naïve + possibilité pour l'utilisateur de modifier solution
         int choixUtilisateur2 = -1;
         while ( choixUtilisateur2 != 3 ){
@@ -147,7 +145,24 @@ class Main{
                     gp.affiche();
                 }
                 else if ( choixUtilisateur2 == 2 ){
-                    System.out.println("Nombre de personnes jalouses : ");
+                    int score_jalousie = 0;
+                    for(Personne p : personnes){
+                        System.out.println(p);
+                        for(String chambre_assignee : p.getPreferences()){
+                            System.out.println(chambre_assignee);
+                            if (chambre_assignee.equals(p.getChambre())) {
+                                break; // on s'arrête dès qu'on atteint sa chambre
+                            }
+                            for (Personne jaloux : p.getJaloux()) {
+                                if (jaloux.getChambre().equals(chambre_assignee)) {
+                                    score_jalousie++;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    System.out.println("Nombre de personnes jalouses : " + score_jalousie);
                 }
 
             }catch(Exception e){
