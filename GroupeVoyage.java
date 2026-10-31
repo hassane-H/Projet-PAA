@@ -14,7 +14,10 @@ public class GroupeVoyage {
         this.nbPersonnes = nbPersonnes;
     }
 
-    public void init(){  // Permet d'initisaliser le Map avec comme valeur de defaut { i : null }  ( i : 1 à n )
+    /*
+    Permet d'initisaliser le Map avec comme valeur de defaut { i : null }  ( i : 1 à n )
+    */ 
+    public void init(){ 
         this.AttributionChambres = new HashMap<>();
 
         for ( int i = 0; i < nbPersonnes; i++){
@@ -23,6 +26,11 @@ public class GroupeVoyage {
 
     }
 
+    /*
+    Permet de récuperer la Personne en fonction de son nom
+    @param String le nom de la personne
+    @return la Personne en fonction de son nom
+    */
     public Personne getPersonne(String nom){
         for ( Personne p : groupePersonnes){
             if ( p.getNom().equals(nom)){
@@ -32,10 +40,20 @@ public class GroupeVoyage {
         return null;
     }
     
+
+    /*
+    Permet de récupérer la liste des personnes du groupe
+    @return la liste de toutes les personnes
+    */
     public Personne[] getPersonnes(){
         return groupePersonnes;
     }
 
+    /*
+    Permet d'afficher l'état des chambres sous forme de texte
+    @return une chaîne listant chaque chambre et son occupant ("Libre" si la chambre est vide)
+
+    */
     public String getChambres() {
     StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, Personne> entry : AttributionChambres.entrySet()) {
@@ -47,11 +65,19 @@ public class GroupeVoyage {
     return sb.toString();
     }
 
-    
+    /*
+    Permet d'attribuer une chambre à une personne 
+    @param String chambre , la chambre qui sera attribuée
+    @param p , la personne qui aura sa chambre attribuée
+    */
     public void ajouterPersonneChambre(String chambre, Personne p){
         AttributionChambres.replace(chambre, p);
     }
 
+    /*
+    Permet de calculer une solution naïve d'attribution de chambres 
+    et de la stocker dans l'attribut AttributionChambres
+    */
     private void getSolutionNaive(){
         
         for ( Personne p : groupePersonnes){  // pour chaque personne du groupe 
@@ -67,6 +93,9 @@ public class GroupeVoyage {
         }
     }
     
+    /* 
+    Permet de calculer et d'afficher la solution naïve
+    */
     public void afficheSolutionNaive() {
     getSolutionNaive();
     System.out.println("--- Solution Naïve ---");
@@ -79,6 +108,11 @@ public class GroupeVoyage {
     }
 }
 
+    /*
+    Permet d'échanger la chambre de 2 personnes
+    @param A , la 1ere personne
+    @param B , la 2eme personne
+    */
     public void echangerChambres(Personne A, Personne B) throws Exception {
         if ( !( AttributionChambres.containsValue(A) && AttributionChambres.containsValue(B) ) ){
             throw new Exception("erreur, l'une des personnes n'existe pas ");
@@ -94,7 +128,10 @@ public class GroupeVoyage {
 
     }
 
-
+    /*
+    Permet d'obtenir toutes les informations de ce groupe
+    @return une chaine de caractères décrivant le groupe
+    */
     @Override 
     public String toString() {
     StringBuilder sb = new StringBuilder("=== État du Groupe de Voyage ===\n");
@@ -113,6 +150,9 @@ public class GroupeVoyage {
     return sb.toString();
 }
 
+    /*
+    Permet d'afficher toutes les informations de de groupe
+    */
     public void affiche(){
         System.out.println(toString());
     }
