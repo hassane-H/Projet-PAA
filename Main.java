@@ -4,176 +4,79 @@ class Main{
 
     
     public static void main(String[] args) {
+
         Scanner sc = new Scanner(System.in);
-        int choixUtilisateur1 = 1;
-        // nombre de personnes n dans le groupe ( = nombre de chambres ) 
-        System.out.println("Nombre de personnes dans le groupe ( = nombre de chambres ) : ");
-        int n = sc.nextInt();
+        int n;
+        do {
+            System.out.println("Entrez le nombres de personnes dans le groupe de voyage ( entre 1 et 26 inclu )");
+            n = Integer.parseInt(sc.nextLine().trim());
+        }while ( n < 1 || n > 26);
 
-        // on crée la liste de personnes
-        Personne[] personnes = new Personne[n];
-        for (int i = 0; i < n; i++){
-            System.out.println("Entrez le nom de la personne "+(i+1));
-            personnes[i] = new Personne(sc.next(), n);
-        }
-        
+        GroupeVoyage gp = new GroupeVoyage(n);
+        int choixUtilisateurBloc1 = 0;
+        boolean verifFinBoucle1 = false;
 
-
-        GroupeVoyage gp = new GroupeVoyage(personnes, n);
-        
-        gp.init(); // on initisalise
-
-        System.out.print("\n");
-
-        gp.affiche();
-
-        // bloc 1 , initialisation des chambres et des relations
-        while ( choixUtilisateur1 != 3 ){
+        //bloc 1 
+        while ( !verifFinBoucle1){
             try{
-                do{
+                
+                System.out.println(gp.toString());
+                System.out.println("Tapez : ");
+                System.out.println("1) ajouter une relation entre 2 personnes");
+                System.out.println("2) Ajouter les préférences d'une personne");
+                System.out.println("3) Fin.");
+                choixUtilisateurBloc1 = Integer.parseInt(sc.nextLine().trim());
+                
+                if ( choixUtilisateurBloc1 == 1 ){      // ajouter une relation entre 2 personnes
 
-                    // choix de l'utilisateur , initialisation 
+                    System.out.println("Entrez le nom de la 1ere Personne");
+                    String nomPersonneRelation1 = sc.nextLine();
+                    Personne personneRelation1 = gp.getUnePersonne(nomPersonneRelation1);
 
-                    System.out.println("Que voulez-vous faire ? ");
-                    System.out.println("1) ajouter une relation 'jaloux' entre deux personnes");
-                    System.out.println("2) ajouter les préférences d'une personne");
-                    System.out.println("3) passer à l'étape suivante");
+                    System.out.println("Entrez le nom de la 2eme Personne");
+                    String nomPersonneRelation2 = sc.nextLine();
+                    Personne personneRelation2 = gp.getUnePersonne(nomPersonneRelation2);
+                
+
+                    gp.ajouterRelation(personneRelation1, personneRelation2);
+                }
+
+
+
+                else if ( choixUtilisateurBloc1 == 2){  // ajouter preferences d'une personne
                     
-                    while (!sc.hasNextInt()) {
-                        System.out.println("Entrez un nombre : 1, 2 ou 3.");
-                        sc.nextLine(); // discard invalid input
+                    System.out.println("Nom suivi des numéros de chambre (ex : A 1 2 3) : ");
+                    String[] mots = sc.nextLine().trim().split("\\s+");
+
+                    if (mots.length < 2) {
+                        throw new IllegalArgumentException("Il faut un nom suivi des numéros de chambre.");
                     }
 
-                    choixUtilisateur1 = sc.nextInt();
-                    sc.nextLine(); // vider le buffer du sc ( retirer le \n entrée dans la ligne précédente)
-
-                }while(choixUtilisateur1 < 1 || choixUtilisateur1 > 3);
-
-                if ( choixUtilisateur1 == 1 ){
-                    System.out.println("Entrez le nom des 2 personnes à la suite ( ex : A B ou C D ) :");
-                    
-                    String entreeUtilisateur1 = sc.nextLine();
-
-                    String[] elements = entreeUtilisateur1.split(" "); // elements est sous forme ["A", "B"]
- 
-                    Personne p = gp.getPersonne(elements[0]);
-                    p.ajoutJaloux(gp.getPersonne(elements[1])); 
-                    for(int i=0;i< p.getJaloux().size(); i++){
-                        System.out.println(p.getNom() + " jalouse " + p.getJaloux().get(i).getNom()+"\n");
-                    }
-                }
-                else if ( choixUtilisateur1 == 2 ){
-
-                    System.out.println("Entrez le nom de la personne suivi des numéros de chambre ( ex : A 1 2 3 ) : ");
-                    String entreeUtilisateur1 = sc.nextLine();
-
-                    String[] elements = entreeUtilisateur1.split(" "); // elements est sous forme ["A", "1", "2", "3"]
-
-                    String nom = elements[0];  // on récupère le "A" ( = nom de la personne suivie ) 
-                    Personne p = gp.getPersonne(nom); 
-
-
-                    int[] preferencesChambres = new int[elements.length - 1]; // tableau d'entiers de la taille de elements-1 ( on a retiré la lettre A )
-                    for( int i = 1; i < elements.length; i++){
-                        preferencesChambres[i-1] = Integer.parseInt(elements[i]);
+                    int[] prefs = new int[mots.length - 1];
+                    for (int i = 1; i < mots.length; i++) {
+                        prefs[i - 1] = Integer.parseInt(mots[i]);                            
                     }
 
 
-                    p.ajoutPreferences(preferencesChambres);
-                    System.out.println("préférences ajoutés avec succès \n\n");
+                    Personne personnePreference = gp.getUnePersonne(mots[0]);
+                    gp.ajouterPreferencesPersonne( personnePreference, prefs);
 
-                    for (Personne pers : gp.getPersonnes()) {
-                        System.out.println(pers);
-                    }
                 }
 
+
+                else if  (choixUtilisateurBloc1 == 3){
+                    // vérification de l'initialisation des préférences de tous
+                    verifFinBoucle1 = gp.verifierInitialisation();
+                }
+                else{
+                    System.out.println("entrez un nombre entre 1 et 3 selon ce que vous voulez faire");
+                }
+            }catch(GroupeVoyageException gve){
+                System.out.println("erreur : " + gve.getMessage());
             }catch(Exception e){
-                System.out.println("erreur : " + e);
-            }finally{
-                System.out.println("fin bloc 1");
+                System.out.println("erreur inconnue : " + e.getMessage());
+                }
             }
+        sc.close();
         }
-
-        System.out.println("=== Récapitulatif des personnes ===");
-        for (Personne pers : gp.getPersonnes()) {
-            System.out.println(pers);
-            if (!pers.getJaloux().isEmpty()) {
-                System.out.print("   -> Jaloux de : ");
-                for (Personne j : pers.getJaloux()) {
-                    System.out.print(j.getNom() + " ");
-                }
-                System.out.println();
-            }
-        }
-        System.out.println();
-
-
-        // affichage d'une solution naïve : 
-        gp.afficheSolutionNaive();
-
-
-
-        // bloc 2 , proposition solution naïve + possibilité pour l'utilisateur de modifier solution
-        int choixUtilisateur2 = -1;
-        while ( choixUtilisateur2 != 3 ){
-            try{
-                do{
-                    System.out.println("Que voulez-vous faire ? ");
-                    System.out.println("1) échanger les chambres de deux personnes");
-                    System.out.println("2) afficher le nombre de personnes jalouses");
-                    System.out.println("3) passer à l'étape suivante");
-
-                    while (!sc.hasNextInt()) {
-                        System.out.println("Entrez un nombre : 1, 2 ou 3.");
-                        sc.nextLine(); // discard invalid input
-                    }
-
-                    choixUtilisateur2 = sc.nextInt();
-                    sc.nextLine(); // vider le buffer du sc ( retirer le \n entrée dans la ligne précédente)
-
-                }while( choixUtilisateur2 < 1 || choixUtilisateur2 > 3 );
-
-                if ( choixUtilisateur2 == 1 ){
-                    System.out.println("Entrer les deux personnes dont vous voulez échanger les chambres ( ex : A B ) : ");
-
-                    String entreeUtilisateur2 = sc.nextLine();
-
-                    String[] elements2 = entreeUtilisateur2.split(" "); // elements est sous forme ["A", "B"]
-
-                    // On échange les chambres
-                    gp.echangerChambres( gp.getPersonne(elements2[0]) , gp.getPersonne(elements2[1])); 
-                    gp.affiche();
-                }
-                else if ( choixUtilisateur2 == 2 ){
-                    int score_jalousie = 0;
-                    for(Personne p : personnes){
-                        System.out.println(p);
-                        for(String chambre_assignee : p.getPreferences()){
-                            System.out.println(chambre_assignee);
-                            if (chambre_assignee.equals(p.getChambre())) {
-                                break; // on s'arrête dès qu'on atteint sa chambre
-                            }
-                            for (Personne jaloux : p.getJaloux()) {
-                                if (jaloux.getChambre().equals(chambre_assignee)) {
-                                    score_jalousie++;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-
-                    System.out.println("Nombre de personnes jalouses : " + score_jalousie);
-                }
-
-            }catch(Exception e){
-                System.out.println("Erreur : " + e);
-            }finally{
-                System.out.println("fin bloc 2");
-            }
-        } 
-
-    System.out.println("------------------------- Résultat final -------------------------");
-    gp.affiche();
-    sc.close();
-    }
 }

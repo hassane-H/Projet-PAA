@@ -1,160 +1,147 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
+
 
 
 
 public class GroupeVoyage {
 
-    private Personne[] groupePersonnes;    // [A, B, C, D]
-    private int nbPersonnes;  // 4
-    private Map<String, Personne> AttributionChambres;  // { c1 : A , c2 : B , c3 : C , c4 : D 
+    private ArrayList<Personne> groupePersonnes;    // [A, B, C, D]
     
-    public GroupeVoyage(Personne[] groupePersonnes, int nbPersonnes){
-        this.groupePersonnes = groupePersonnes;
-        this.nbPersonnes = nbPersonnes;
-    }
 
-    /*
-    Permet d'initisaliser le Map avec comme valeur de defaut { i : null }  ( i : 1 à n )
-    */ 
-    public void init(){ 
-        this.AttributionChambres = new HashMap<>();
-
-        for ( int i = 0; i < nbPersonnes; i++){
-            AttributionChambres.put((String.valueOf(i+1)), null);
+    public GroupeVoyage(int n) {
+        if (n < 1 || n > 26) {
+            throw new IllegalArgumentException("Le nombre de personnes doit être compris entre 1 et 26.");
         }
-
+        this.groupePersonnes = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            groupePersonnes.add(new Personne(String.valueOf((char) ('A' + i))));
+        }
     }
 
-    /*
-    Permet de récuperer la Personne en fonction de son nom
-    @param String le nom de la personne
-    @return la Personne en fonction de son nom
+    /**
+     * Permet de vérifier que chaque personne a des préférences 
+     * @throws GroupeVoyageException
+     * @return true si toutes les personnes ont des préférences initialisées , false sinon
+     */
+    public boolean verifierInitialisation() throws GroupeVoyageException{
+        boolean initialise = true;
+        ArrayList<Personne> listePasInitialisees = new ArrayList<Personne>();
+        for ( Personne p : groupePersonnes){
+            if ( p.getPreferences() == null){
+                listePasInitialisees.add(p);
+                initialise = false;
+            }
+        }
+        if ( !initialise ){ 
+            StringBuffer sb = new StringBuffer();
+            for ( Personne p : listePasInitialisees){
+                sb.append(" " + p.getNom());
+            }
+            throw new GroupeVoyageException("Les préférences des personnes " + sb + " n'ont pas été initialisées");
+        }
+        return initialise;
+    }
+
+
+    /**
+     * Permet d'ajouter une relation jaloux entre 2 personnes 
+     * @param p1
+     * @param p2
+     */
+    public void ajouterRelation(Personne p1 , Personne p2) throws GroupeVoyageException{
+        if ( p1.equals(p2)){
+            throw new GroupeVoyageException("Les 2 personnes sont les memes");
+        }
+        else if ( p1.getJaloux().contains(p2) || p2.getJaloux().contains(p1)){
+            throw new GroupeVoyageException( p1.getNom() + " est déjà jaloux de " + p2.getNom() );
+        }
+        p1.ajoutJaloux(p2);
+        p2.ajoutJaloux(p1);
+    }
+
+
+
+
+    /**
+     * Permet d'initialiser les préférences d'une personne
+     * @param p1
+     * @param preferences
+     * @throws Exception
+     */
+    public void ajouterPreferencesPersonne(Personne p1, int[] preferences) throws GroupeVoyageException{
+        int nbChambres = groupePersonnes.size();
+        HashSet<Integer> ensPreferences = new HashSet<Integer>();
+
+        if ( preferences.length != groupePersonnes.size() ){
+            throw new GroupeVoyageException("la taille de la liste de préférences est inexacte");
+        }
+        
+        
+        for ( int numChambre : preferences){
+            ensPreferences.add(numChambre);
+            if ( numChambre < 1 || numChambre > nbChambres){
+                throw new GroupeVoyageException("La chambre " + numChambre + " n'existe pas (valeurs acceptees de 1 à " + nbChambres + ")");
+            }
+        }
+        if ( ensPreferences.size() != nbChambres) {
+            throw new GroupeVoyageException("Il faut entrer " + nbChambres + " chambres ,nb de chambre recu : " + ensPreferences);
+        }
+        
+        p1.setPreferences(preferences);
+    }
+
+
+
+    /**
+    *Permet de récuperer la Personne en fonction de son nom
+    *@param String le nom de la personne
+    *@return la Personne en fonction de son nom
     */
-    public Personne getPersonne(String nom){
+    public Personne getUnePersonne(String nom) throws GroupeVoyageException{
         for ( Personne p : groupePersonnes){
             if ( p.getNom().equals(nom)){
                 return p;
             }
         }
-        return null;
+        throw new GroupeVoyageException("la personne " + nom + "n'a pas été trouvée");
     }
     
 
-    /*
-    Permet de récupérer la liste des personnes du groupe
-    @return la liste de toutes les personnes
-    */
-    public Personne[] getPersonnes(){
+
+
+
+
+    /**
+     * Permet de récuperer la lisye de toutes les personnes du groupe
+     * @return la liste des personnes du groupe
+     */
+    public ArrayList<Personne> getPersonnes(){
         return groupePersonnes;
     }
+ 
 
-    /*
-    Permet d'afficher l'état des chambres sous forme de texte
-    @return une chaîne listant chaque chambre et son occupant ("Libre" si la chambre est vide)
 
-    */
-    public String getChambres() {
-    StringBuilder sb = new StringBuilder();
-    for (Map.Entry<String, Personne> entry : AttributionChambres.entrySet()) {
-        String numChambre = entry.getKey();
-        Personne occupant = entry.getValue();
-        sb.append("Chambre ").append(numChambre).append(" : ")
-          .append(occupant != null ? occupant.getNom() : "Libre").append("\n");
+    public String NomsString(){
+        StringBuffer sb = new StringBuffer();
+        for ( Personne p : groupePersonnes){
+            sb.append(" " + p.getNom());
         }
-    return sb.toString();
+        return new String(sb);
     }
 
-    /*
-    Permet d'attribuer une chambre à une personne 
-    @param String chambre , la chambre qui sera attribuée
-    @param p , la personne qui aura sa chambre attribuée
-    */
-    public void ajouterPersonneChambre(String chambre, Personne p){
-        AttributionChambres.replace(chambre, p);
-    }
 
-    /*
-    Permet de calculer une solution naïve d'attribution de chambres 
-    et de la stocker dans l'attribut AttributionChambres
-    */
-    private void getSolutionNaive(){
-        
-        for ( Personne p : groupePersonnes){  // pour chaque personne du groupe 
-            
-            for ( String chambrePrefere : p.getPreferences()){  // pour chaque chambre préféré de la personne ( dans l'ordre des préférences )
-                
-                if (  AttributionChambres.containsKey(chambrePrefere) && AttributionChambres.get(chambrePrefere) == null  ){
-                    AttributionChambres.replace(chambrePrefere, p);
-                    p.ajoutChambre(chambrePrefere);
-                    break;
-                }
-            }
-        }
-    }
-    
-    /* 
-    Permet de calculer et d'afficher la solution naïve
-    */
-    public void afficheSolutionNaive() {
-    getSolutionNaive();
-    System.out.println("--- Solution Naïve ---");
-    for (Map.Entry<String, Personne> entry : AttributionChambres.entrySet()) {
-        String numChambre = entry.getKey();
-        Personne occupant = entry.getValue();
-        // Evite le NullPointerException si la chambre est null
-        String nomOccupant = (occupant != null) ? occupant.getNom() : "Libre";
-        System.out.println("c" + numChambre + " : " + nomOccupant);
-    }
-}
-
-    /*
-    Permet d'échanger la chambre de 2 personnes
-    @param A , la 1ere personne
-    @param B , la 2eme personne
-    */
-    public void echangerChambres(Personne A, Personne B) throws Exception {
-        if ( !( AttributionChambres.containsValue(A) && AttributionChambres.containsValue(B) ) ){
-            throw new Exception("erreur, l'une des personnes n'existe pas ");
-        }
-        // { c1 : A , c2 : B}
-        // on trouve A , on note sa chambre , on trouve B , on note sa chambre , on attribue a la chambre de A B et a la chambre de B A
-        String chambreA = A.getChambre();
-        String chambreB = B.getChambre();
-        AttributionChambres.replace(chambreA, B);
-        AttributionChambres.replace(chambreB, A);
-        A.ajoutChambre(chambreB);
-        B.ajoutChambre(chambreA);
-
-    }
-
-    /*
-    Permet d'obtenir toutes les informations de ce groupe
-    @return une chaine de caractères décrivant le groupe
-    */
+    /**    (non-Javadoc)
+     * Permet de récupérer l'ensemble des infos du GroupeVoyage sous forme de chaine de caracteres
+     * @see java.lang.Object#toString()
+     */
     @Override 
     public String toString() {
-    StringBuilder sb = new StringBuilder("=== État du Groupe de Voyage ===\n");
-    for (Map.Entry<String, Personne> entry : AttributionChambres.entrySet()) {
-        String numChambre = entry.getKey();
-        Personne occupant = entry.getValue();
-
-        sb.append("Chambre ").append(numChambre).append(" : ");
-        if (occupant != null) {
-            sb.append(occupant.getNom());
-        } else {
-            sb.append("Non attribuée");
+        StringBuffer sb = new StringBuffer();
+        for ( Personne p : groupePersonnes){
+            sb.append(p.toString());
+            sb.append("\n---------------------------\n");
         }
-        sb.append("\n");
+        return new String(sb);
     }
-    return sb.toString();
-}
-
-    /*
-    Permet d'afficher toutes les informations de de groupe
-    */
-    public void affiche(){
-        System.out.println(toString());
-    }
-
 }
