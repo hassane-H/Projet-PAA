@@ -8,7 +8,10 @@ public class GroupeVoyage {
 
     private ArrayList<Personne> groupePersonnes;    // [A, B, C, D]
     
-
+    /**
+     * Constructeur avec paramètre la taille du groupe de personnes
+     * @param n
+     */
     public GroupeVoyage(int n) {
         if (n < 1 || n > 26) {
             throw new IllegalArgumentException("Le nombre de personnes doit être compris entre 1 et 26.");
@@ -109,9 +112,6 @@ public class GroupeVoyage {
     
 
 
-
-
-
     /**
      * Permet de récuperer la lisye de toutes les personnes du groupe
      * @return la liste des personnes du groupe
@@ -121,14 +121,63 @@ public class GroupeVoyage {
     }
  
 
-
-    public String NomsString(){
+    /**
+     * 
+     * @return le nom de chaque personnes du groupe sur forme de chaine de caractères
+     */
+    public String nomsString(){
         StringBuffer sb = new StringBuffer();
         for ( Personne p : groupePersonnes){
             sb.append(" " + p.getNom());
         }
         return new String(sb);
     }
+
+
+    /**
+     * 
+     * @param chambre
+     * @return true si une chambre a déjà été attribuée, false sinon
+     */
+    public boolean chambreAttribuee(int chambre){
+        for ( Personne p : groupePersonnes){
+            if ( p.getChambre() == chambre){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    /**
+     * permet de calculer une solution naïve en attribuant a chacun sa chambre préférée disponible
+     */
+    public void calculSolutionNaive(){
+        for ( Personne p : groupePersonnes){
+            for (int rangPref = 0; rangPref < groupePersonnes.size(); rangPref++){
+                if ( !(chambreAttribuee( p.getPreferences()[rangPref]) )){  // si la i-ème chambre n'a pas encore été attrbuée
+                    p.ajoutChambre(p.getPreferences()[rangPref]);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 
+     * @return la chambre de chaque personne 
+    */
+    public String AttributionsString(){
+        StringBuffer sb = new StringBuffer();
+
+        for ( Personne p : groupePersonnes){
+            sb.append( p.getNom() + " : " + p.getChambre() + "\n");
+        }
+
+        return new String(sb);
+    }
+
 
 
     /**    (non-Javadoc)

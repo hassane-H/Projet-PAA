@@ -19,15 +19,19 @@ class Main{
         //bloc 1 
         while ( !verifFinBoucle1){
             try{
-                
-                System.out.println(gp.toString());
                 System.out.println("Tapez : ");
+                System.out.println("0) afficher les personnes");
                 System.out.println("1) ajouter une relation entre 2 personnes");
                 System.out.println("2) Ajouter les préférences d'une personne");
                 System.out.println("3) Fin.");
                 choixUtilisateurBloc1 = Integer.parseInt(sc.nextLine().trim());
                 
-                if ( choixUtilisateurBloc1 == 1 ){      // ajouter une relation entre 2 personnes
+                if ( choixUtilisateurBloc1 == 4){ // afficher les personnes 
+                    System.out.println(gp.toString());
+                }
+
+
+                else if ( choixUtilisateurBloc1 == 1 ){      // ajouter une relation entre 2 personnes
 
                     System.out.println("Entrez le nom de la 1ere Personne");
                     String nomPersonneRelation1 = sc.nextLine();
@@ -68,6 +72,9 @@ class Main{
                     // vérification de l'initialisation des préférences de tous
                     verifFinBoucle1 = gp.verifierInitialisation();
                 }
+
+
+
                 else{
                     System.out.println("entrez un nombre entre 1 et 3 selon ce que vous voulez faire");
                 }
@@ -77,6 +84,12 @@ class Main{
                 System.out.println("erreur inconnue : " + e.getMessage());
                 }
             }
-        sc.close();
+
+            gp.calculSolutionNaive();
+            System.out.println(gp.AttributionsString());
+
+            sc.close();
         }
+
+        
 }
