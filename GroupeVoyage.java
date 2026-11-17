@@ -179,6 +179,47 @@ public class GroupeVoyage {
     }
 
 
+    /** 
+     * 
+     * @return le score de jalousie du groupe de personnes
+    */
+    public int scoreJalousie(){
+        int score_jalousie = 0;
+        for (Personne p : groupePersonnes) {
+            for (int chambre_assignee : p.getPreferences()) {
+                if (chambre_assignee == p.getChambre()) {
+                    break; // on s'arrête dès qu'on atteint sa chambre
+                }
+                for (Personne jaloux : p.getJaloux()) {
+                    if (jaloux.getChambre() == chambre_assignee) {
+                        score_jalousie++;
+                        break;
+                    }
+                }
+            }
+        }
+        return score_jalousie;
+    }
+
+    /**
+     * Permet d'échanger les chambres de 2 personnes
+     * @param A
+     * @param B
+     * @throws Exception
+     */
+    public void echangerChambres(Personne A, Personne B) throws Exception {
+        if (A == null || B == null || !groupePersonnes.contains(A) || !groupePersonnes.contains(B)) {
+            throw new Exception("erreur, l'une des personnes n'existe pas ");
+        }
+        if (A.equals(B)) {
+            throw new Exception("erreur, une personne ne peut pas échanger sa chambre avec elle-même");
+        }
+
+        int chambreA = A.getChambre();
+        int chambreB = B.getChambre();
+        A.ajoutChambre(chambreB);
+        B.ajoutChambre(chambreA);
+    }
 
     /**    (non-Javadoc)
      * Permet de récupérer l'ensemble des infos du GroupeVoyage sous forme de chaine de caracteres

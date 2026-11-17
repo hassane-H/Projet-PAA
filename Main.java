@@ -26,7 +26,7 @@ class Main{
                 System.out.println("3) Fin.");
                 choixUtilisateurBloc1 = Integer.parseInt(sc.nextLine().trim());
                 
-                if ( choixUtilisateurBloc1 == 4){ // afficher les personnes 
+                if ( choixUtilisateurBloc1 == 0){ // afficher les personnes 
                     System.out.println(gp.toString());
                 }
 
@@ -88,8 +88,69 @@ class Main{
             gp.calculSolutionNaive();
             System.out.println(gp.AttributionsString());
 
-            sc.close();
-        }
+        int choixUtilisateurBloc2 = 0;
+        boolean verifFinBoucle2 = false;
 
-        
+        //bloc 2 
+        while ( !verifFinBoucle2){
+            try{
+                System.out.println("Tapez : ");
+                System.out.println("0) afficher les personnes");
+                System.out.println("1) échanger les chambres de 2 personnes");
+                System.out.println("2) Calculer le nombre de personnes jalouses");
+                System.out.println("3) Fin.");
+                choixUtilisateurBloc2 = Integer.parseInt(sc.nextLine().trim());
+                
+                if ( choixUtilisateurBloc2 == 0){ // afficher les personnes 
+                    System.out.println(gp.toString());
+                }
+
+
+                else if ( choixUtilisateurBloc2 == 1 ){      // échanger les chambres de 2 personnes
+
+                    System.out.println("Entrer les deux personnes dont vous voulez échanger les chambres ( ex : A B ) : ");
+
+                    String entreeUtilisateur2 = sc.nextLine();
+
+                    String[] elements2 = entreeUtilisateur2.split(" "); // elements est sous forme ["A", "B"]
+
+                    // On échange les chambres
+                    gp.echangerChambres(gp.getUnePersonne(elements2[0]) , gp.getUnePersonne(elements2[1])); 
+                    System.out.println(gp.toString());
+
+                    
+                }
+
+
+
+                else if ( choixUtilisateurBloc2 == 2){  // calculer le score de jalousie
+                    
+                    int scoreJalousie = gp.scoreJalousie();
+                    System.out.println("Le score de jalousie est : " + scoreJalousie);
+
+                }
+
+
+                else if  (choixUtilisateurBloc2 == 3){
+                    verifFinBoucle2 = true;
+                }
+
+
+
+                else{
+                    System.out.println("entrez un nombre entre 1 et 3 selon ce que vous voulez faire");
+                }
+
+            }catch(GroupeVoyageException gve){
+                System.out.println("erreur : " + gve.getMessage());
+            }catch(Exception e){
+                System.out.println("erreur inconnue : " + e.getMessage());
+            }
+
+            gp.calculSolutionNaive();
+            System.out.println(gp.AttributionsString());
+
+        }
+        sc.close();
+    }    
 }
