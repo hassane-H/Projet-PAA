@@ -88,7 +88,7 @@ public class GroupeVoyage {
             }
         }
         if ( ensPreferences.size() != nbChambres) {
-            throw new GroupeVoyageException("Il faut entrer " + nbChambres + " chambres ,nb de chambre recu : " + ensPreferences);
+            throw new GroupeVoyageException("Il faut entrer " + nbChambres + " chambres ,nb de chambre recu : " + ensPreferences.size());
         }
         
         p1.setPreferences(preferences);
@@ -107,7 +107,7 @@ public class GroupeVoyage {
                 return p;
             }
         }
-        throw new GroupeVoyageException("la personne " + nom + "n'a pas été trouvée");
+        throw new GroupeVoyageException("la personne " + nom + " n'a pas été trouvée");
     }
     
 
@@ -158,6 +158,7 @@ public class GroupeVoyage {
             for (int rangPref = 0; rangPref < groupePersonnes.size(); rangPref++){
                 if ( !(chambreAttribuee( p.getPreferences()[rangPref]) )){  // si la i-ème chambre n'a pas encore été attrbuée
                     p.ajoutChambre(p.getPreferences()[rangPref]);
+                    break;
                 }
             }
         }
@@ -172,12 +173,34 @@ public class GroupeVoyage {
         StringBuffer sb = new StringBuffer();
 
         for ( Personne p : groupePersonnes){
-            sb.append( p.getNom() + " : " + p.getChambre() + "\n");
+            sb.append( p.getNom() + ":" + p.getChambre() + "\n");
         }
 
         return new String(sb);
     }
 
+    /**
+     * 
+     * @param p
+     * @return true si la personne p est jalouse
+     */
+    public boolean personneJalouse(Personne p){
+        boolean jalouse = false;
+        for (int chambre_assignee : p.getPreferences()){
+            if ( chambre_assignee == p.getChambre()){
+                break;
+            }
+            
+            for (Personne jaloux : p.getJaloux()){
+                if ( chambre_assignee == jaloux.getChambre()){
+                    return true;
+                }
+            }
+    }
+    return jalouse;
+}
+
+    
 
     /** 
      * 
@@ -186,16 +209,8 @@ public class GroupeVoyage {
     public int scoreJalousie(){
         int score_jalousie = 0;
         for (Personne p : groupePersonnes) {
-            for (int chambre_assignee : p.getPreferences()) {
-                if (chambre_assignee == p.getChambre()) {
-                    break; // on s'arrête dès qu'on atteint sa chambre
-                }
-                for (Personne jaloux : p.getJaloux()) {
-                    if (jaloux.getChambre() == chambre_assignee) {
-                        score_jalousie++;
-                        break;
-                    }
-                }
+            if ( personneJalouse(p)){
+                score_jalousie++;
             }
         }
         return score_jalousie;
@@ -207,12 +222,12 @@ public class GroupeVoyage {
      * @param B
      * @throws Exception
      */
-    public void echangerChambres(Personne A, Personne B) throws Exception {
+    public void echangerChambres(Personne A, Personne B) throws GroupeVoyageException {
         if (A == null || B == null || !groupePersonnes.contains(A) || !groupePersonnes.contains(B)) {
-            throw new Exception("erreur, l'une des personnes n'existe pas ");
+            throw new GroupeVoyageException("erreur, l'une des personnes n'existe pas ");
         }
         if (A.equals(B)) {
-            throw new Exception("erreur, une personne ne peut pas échanger sa chambre avec elle-même");
+            throw new GroupeVoyageException("erreur, une personne ne peut pas échanger sa chambre avec elle-même");
         }
 
         int chambreA = A.getChambre();

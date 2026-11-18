@@ -34,11 +34,11 @@ class Main{
                 else if ( choixUtilisateurBloc1 == 1 ){      // ajouter une relation entre 2 personnes
 
                     System.out.println("Entrez le nom de la 1ere Personne");
-                    String nomPersonneRelation1 = sc.nextLine();
+                    String nomPersonneRelation1 = sc.nextLine().trim();
                     Personne personneRelation1 = gp.getUnePersonne(nomPersonneRelation1);
 
                     System.out.println("Entrez le nom de la 2eme Personne");
-                    String nomPersonneRelation2 = sc.nextLine();
+                    String nomPersonneRelation2 = sc.nextLine().trim();
                     Personne personneRelation2 = gp.getUnePersonne(nomPersonneRelation2);
                 
 
@@ -53,7 +53,7 @@ class Main{
                     String[] mots = sc.nextLine().trim().split("\\s+");
 
                     if (mots.length < 2) {
-                        throw new IllegalArgumentException("Il faut un nom suivi des numéros de chambre.");
+                        throw new GroupeVoyageException("Il faut un nom suivi des numéros de chambre.");
                     }
 
                     int[] prefs = new int[mots.length - 1];
@@ -76,10 +76,12 @@ class Main{
 
 
                 else{
-                    System.out.println("entrez un nombre entre 1 et 3 selon ce que vous voulez faire");
+                    System.out.println("entrez un nombre entre 0 et 3 selon ce que vous voulez faire");
                 }
             }catch(GroupeVoyageException gve){
-                System.out.println("erreur : " + gve.getMessage());
+                System.out.println("erreur groupe voyage : " + gve.getMessage());
+            }catch(NumberFormatException nfe){
+                System.out.println("erreur de saisie non numérique, entrez un entier ( " + nfe.getMessage() + ")");
             }catch(Exception e){
                 System.out.println("erreur inconnue : " + e.getMessage());
                 }
@@ -112,11 +114,13 @@ class Main{
 
                     String entreeUtilisateur2 = sc.nextLine();
 
-                    String[] elements2 = entreeUtilisateur2.split(" "); // elements est sous forme ["A", "B"]
-
+                    String[] elements2 = entreeUtilisateur2.trim().split("\\s+"); // elements est sous forme ["A", "B"]
+                    if (elements2.length != 2) {
+                        throw new GroupeVoyageException("Il faut écrire le nom de 2 personnes ( exemple : A B )");
+                    }
                     // On échange les chambres
                     gp.echangerChambres(gp.getUnePersonne(elements2[0]) , gp.getUnePersonne(elements2[1])); 
-                    System.out.println(gp.toString());
+                    
 
                     
                 }
@@ -138,7 +142,7 @@ class Main{
 
 
                 else{
-                    System.out.println("entrez un nombre entre 1 et 3 selon ce que vous voulez faire");
+                    System.out.println("entrez un nombre entre 0 et 3 selon ce que vous voulez faire");
                 }
 
             }catch(GroupeVoyageException gve){
@@ -147,7 +151,6 @@ class Main{
                 System.out.println("erreur inconnue : " + e.getMessage());
             }
 
-            gp.calculSolutionNaive();
             System.out.println(gp.AttributionsString());
 
         }
